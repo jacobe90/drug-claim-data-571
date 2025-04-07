@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D3 Line Chart</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+
+<svg width="600" height="400"></svg>
+
+<script>
+    // Sample data (time series)
+    const data = [
+        { date: "2024-01-01", value: 10 },
+        { date: "2024-01-02", value: 25 },
+        { date: "2024-01-03", value: 15 },
+        { date: "2024-01-04", value: 30 },
+        { date: "2024-01-05", value: 20 }
+    ];
+
+    // Parse the date format
+    const parseDate = d3.timeParse("%Y-%m-%d");
+    data.forEach(d => d.date = parseDate(d.date));
+
+    // Set dimensions
+    const width = 600, height = 400, margin = { top: 20, right: 30, bottom: 50, left: 50 };
+
+    // Create scales
+    const x = d3.scaleTime()
+        .domain(d3.extent(data, d => d.date))
+        .range([margin.left, width - margin.right]);
+
+    const y = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.value)])
+        .nice()
+        .range([height - margin.bottom, margin.top]);
+
+    // Select the SVG element
+    const svg = d3.select("svg");
+
+    // Add X and Y axes
+    svg.append("g")
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x).ticks(5));
+
+    svg.append("g")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y));
+
+    // Create the line generator
+    const line = d3.line()
+        .x(d => x(d.date))
+        .y(d => y(d.value));
+
+    // Append the line path
+    svg.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 2)
+        .attr("d", line);
+
+</script>
+
+</body>
+</html>

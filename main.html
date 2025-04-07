@@ -6,17 +6,66 @@
   <title>CHIA Claim Data Visualization</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
-<script>
-    d3.csv("Claims-time-series-test.csv").then(data => {
-        console.log(data[100]);
-    });
-</script>
+
 <body>
-  <div>
-    <h6>
-      Hello bro!
-    </h6>
-  </div>
+    <svg width="600" height="400"></svg>
+    <script>
+        // TODO:
+        // menu for selecting drugs to visualize
+        d3.csv("Claims-time-series-test.csv").then(data => {
+            data.forEach(e => {
+                e["Average Out Of Pocket Per Prescription"] = parseFloat(e["Average Out Of Pocket Per Prescription"]);
+            });
+            let immunosuppressantsData = data.filter(d => d["Therapeutic Class"] == "Immunosuppressants")
+            console.log(immunosuppressantsData);
+            
+            // Set dimensions
+            const width = 600, height = 400, margin = { top: 20, right: 30, bottom: 50, left: 50 };
+            
+            // Create scales
+            const x = d3.scalePoint()
+                        .domain(immunosuppressantsData.map(d => d.Year))
+                        .range([margin.left, width - margin.right])
+            
+            const xAxis = d3.axisBottom(x);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(immunosuppressantsData, d => d["Average Out Of Pocket Per Prescription"])])
+                .nice()
+                .range([height - margin.bottom, margin.top]);
+        
+            // Select the SVG element
+            const svg = d3.select("svg");
+
+            // Add X and Y axes
+            svg.append("g")
+                .attr("transform", `translate(0,${height - margin.bottom})`)
+                .call(xAxis);
+        
+            svg.append("g")
+                .attr("transform", `translate(${margin.left},0)`)
+                .call(d3.axisLeft(y));
+        
+            // Create the line generator
+            const line = d3.line()
+                .x(d => x(d.Year))
+                .y(d => y(d["Average Out Of Pocket Per Prescription"]));
+        
+            // Append the line path
+            svg.append("path")
+                .datum(immunosuppressantsData)
+                .attr("fill", "none")
+                .attr("stroke", "steelblue")
+                .attr("stroke-width", 2)
+                .attr("d", line);
+            
+            console.log(data);
+        });
+        
+        
+    </script>
+    <div>
+    </div>
 </body>
 
 </html>
