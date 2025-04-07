@@ -72,8 +72,8 @@ body, html {
 
 <button class="tablink" onclick="openPage('Home', this, 'red')">Home</button>
 <button class="tablink" onclick="openPage('News', this, 'green')" id="defaultOpen">View 1</button>
-<button class="tablink" onclick="openPage('Contact', this, 'blue')">Contact</button>
-<button class="tablink" onclick="openPage('About', this, 'orange')">About</button>
+<button class="tablink" onclick="openPage('View2', this, 'purple')">View 2</button>
+<button class="tablink" onclick="openPage('View3', this, 'teal')">View 3</button>
 
 <div id="Home" class="tabcontent">
   <h3>Home</h3>
@@ -141,19 +141,22 @@ body, html {
   </div>
 </div>
 
-<div id="Contact" class="tabcontent">
-  <h3>Contact</h3>
-  <p>Get in touch, or swing by for a cup of coffee.</p>
+<div id="View2" class="tabcontent">
+  <h1>View 2</h1>
+  <div id="visualization"></div>
 </div>
 
-<div id="About" class="tabcontent">
-  <h3>About</h3>
-  <p>Who we are and what we do.</p>
+<div id="View3" class="tabcontent">
+  <h1>View 3</h1>
+  <div class="row chart">
+    <!-- Content for View 3 will go here -->
+  </div>
 </div>
 
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="website-scripts/tab-scripts.js"></script>
 <script src="website-scripts/barplot1-script.js"></script>
 <script src="website-scripts/barplot2-script.js"></script>
+<script src="visualization.js"></script>
 </body>
 </html> 
