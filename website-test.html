@@ -148,8 +148,25 @@ body, html {
 
 <div id="View3" class="tabcontent">
   <h1>View 3</h1>
-  <div class="row chart">
-    <!-- Content for View 3 will go here -->
+  <div>
+    <body>
+      <div class="plot" id="PricePerPrescription">
+          <h3>Price per prescription</h3>
+          <h4 id="titlePricePerPerscription"></h4>
+          <svg width="600" height="400" id="timeSeriesPricePerPerscription">
+          </svg>
+      </div>
+      <div class="plot" id="PercentGeneric">
+          <h3>Percent Generic</h3>
+          <h4 id="titlePercentGeneric"></h4>
+          <svg width="600" height="400" id="timeSeriesPercentGeneric">
+          </svg>
+      </div>
+      
+      <select name="drugClassDropdown" id="drugClassDropdown"></select>
+      
+      
+    </body>
   </div>
 </div>
 
@@ -158,5 +175,6 @@ body, html {
 <script src="website-scripts/barplot1-script.js"></script>
 <script src="website-scripts/barplot2-script.js"></script>
 <script src="visualization.js"></script>
+<script src="website-scripts/time-series.js"></script>
 </body>
 </html> 

@@ -1,0 +1,183 @@
+d3.csv("Claims-time-series-test.csv").then(data => {
+    // preprocess data
+    data.forEach(e => {
+        e["Average Out Of Pocket Per Prescription"] = parseFloat(e["Average Out Of Pocket Per Prescription"]);
+    });
+
+    // create array of drug classes
+    let drugClasses = data.map(d => d["Therapeutic Class"]);
+    drugClasses = [...new Set(drugClasses)]; // remove duplicates
+    
+    // initialize dropdown
+    dropdown = d3.select('#drugClassDropdown')
+                 
+    dropdown.selectAll('option')
+            .data(drugClasses)
+            .enter()
+            .append('option')
+            .attr('value', d => d)
+            .text(d => d);
+    
+    const classDropdown = document.getElementById('drugClassDropdown');
+    
+    // update plot function
+    function updatePlotPricePerPrescription() {
+        // get selected class from dropdown
+        currentClass = classDropdown.value;
+
+        // clear svg
+        document.getElementById('timeSeriesPricePerPerscription').innerHTML = '';
+
+        // add plot to svg
+
+        // set title
+        document.getElementById('titlePricePerPerscription').innerHTML = currentClass;
+
+        // select svg
+        const svg = d3.select("#timeSeriesPricePerPerscription");
+
+        let currentClassData = data.filter(d => d["Therapeutic Class"] == currentClass)
+        console.log(currentClassData);
+        
+        // Set dimensions
+        const width = 600, height = 400, margin = { top: 20, right: 30, bottom: 50, left: 50 };
+        
+        // Create scales
+        const x = d3.scalePoint()
+                    .domain(currentClassData.map(d => d.Year))
+                    .range([margin.left, width - margin.right])
+        
+        const xAxis = d3.axisBottom(x);
+
+        const y = d3.scaleLinear()
+            .domain([0, d3.max(currentClassData, d => d["Average Out Of Pocket Per Prescription"])])
+            .nice()
+            .range([height - margin.bottom, margin.top]);
+    
+        // Select the SVG element
+
+        // Add X and Y axes
+        svg.append("g")
+            .attr("transform", `translate(0,${height - margin.bottom})`)
+            .call(xAxis);
+    
+        svg.append("g")
+            .attr("transform", `translate(${margin.left},0)`)
+            .call(d3.axisLeft(y));
+    
+        // Create the line generator
+        const line = d3.line()
+            .x(d => x(d.Year))
+            .y(d => y(d["Average Out Of Pocket Per Prescription"]));
+    
+        // Append the line path
+        svg.append("path")
+            .datum(currentClassData)
+            .attr("fill", "none")
+            .attr("stroke", "steelblue")
+            .attr("stroke-width", 2)
+            .attr("d", line);
+        
+        // X-axis label
+        svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("x", width / 2)
+            .attr("y", height - 10)
+            .text("Year");
+
+        // Y-axis label
+        svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("transform", `rotate(-90)`)
+            .attr("x", -height / 2)
+            .attr("y", 15)
+            .text("Average Out-of-Pocket per Prescription");
+        
+        console.log(data);
+        // add line plot to svg
+    }
+    
+    function updatePlotPercentGeneric() {
+        // get selected class from dropdown
+        currentClass = classDropdown.value;
+
+        // clear svg
+        document.getElementById('timeSeriesPercentGeneric').innerHTML = '';
+
+        // add plot to svg
+
+        // set title
+        document.getElementById('titlePercentGeneric').innerHTML = currentClass;
+
+        // select svg
+        const svg = d3.select("#timeSeriesPercentGeneric");
+
+        let currentClassData = data.filter(d => d["Therapeutic Class"] == currentClass)
+        console.log(currentClassData);
+        
+        // Set dimensions
+        const width = 600, height = 400, margin = { top: 20, right: 30, bottom: 50, left: 50 };
+        
+        // Create scales
+        const x = d3.scalePoint()
+                    .domain(currentClassData.map(d => d.Year))
+                    .range([margin.left, width - margin.right])
+        
+        const xAxis = d3.axisBottom(x);
+
+        const y = d3.scaleLinear()
+            .domain([0, d3.max(currentClassData, d => d["Percent Generic"])])
+            .nice()
+            .range([height - margin.bottom, margin.top]);
+    
+        // Select the SVG element
+
+        // Add X and Y axes
+        svg.append("g")
+            .attr("transform", `translate(0,${height - margin.bottom})`)
+            .call(xAxis);
+    
+        svg.append("g")
+            .attr("transform", `translate(${margin.left},0)`)
+            .call(d3.axisLeft(y));
+    
+        // Create the line generator
+        const line = d3.line()
+            .x(d => x(d.Year))
+            .y(d => y(d["Percent Generic"]));
+    
+        // Append the line path
+        svg.append("path")
+            .datum(currentClassData)
+            .attr("fill", "none")
+            .attr("stroke", "steelblue")
+            .attr("stroke-width", 2)
+            .attr("d", line);
+        
+        // X-axis label
+        svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("x", width / 2)
+            .attr("y", height - 10)
+            .text("Year");
+
+        // Y-axis label
+        svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("transform", `rotate(-90)`)
+            .attr("x", -height / 2)
+            .attr("y", 15)
+            .text("Percent of Prescriptions which are generic");
+        
+        console.log(data);
+        // add line plot to svg
+    }
+
+    updatePlots = () => {
+        updatePlotPercentGeneric(); 
+        updatePlotPricePerPrescription();
+    }
+    classDropdown.onchange = updatePlots;
+
+    updatePlots();
+});
