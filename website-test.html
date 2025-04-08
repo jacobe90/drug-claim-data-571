@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {box-sizing: border-box}
+
+/* Set height of body and the document to 100% */
+body, html {
+  height: 100%;
+  margin: 0;
+  font-family: Arial;
+}
+
+/* Style tab links */
+.tablink {
+  background-color: #555;
+  color: white;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  font-size: 17px;
+  width: 25%;
+}
+
+.tablink:hover {
+  background-color: #777;
+}
+
+/* Style the tab content (and add height:100% for full page content) */
+.tabcontent {
+  color: black;
+  display: none;
+  padding: 100px 20px;
+  height: 100%;
+}
+
+#Home {background-color: white;}
+#News {background-color: white;}
+#Contact {background-color: white;}
+#About {background-color: white;}
+
+/*chart styling from hw3*/
+    .chart,
+    h2 {
+      text-align: center;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+/*styling from barplot code*/
+        body { font-family: Arial, sans-serif; }
+        .bar { stroke: white; }
+        .tooltip {
+            position: absolute;
+            background: lightgray;
+            padding: 5px;
+            border-radius: 5px;
+            pointer-events: none;
+            display: none;
+            font-size: 14px;
+        }
+        .legend { cursor: pointer; }
+</style>
+</head>
+<body>
+
+<button class="tablink" onclick="openPage('Home', this, 'red')">Home</button>
+<button class="tablink" onclick="openPage('News', this, 'green')" id="defaultOpen">View 1</button>
+<button class="tablink" onclick="openPage('View2', this, 'purple')">View 2</button>
+<button class="tablink" onclick="openPage('View3', this, 'teal')">View 3</button>
+
+<div id="Home" class="tabcontent">
+  <h3>Home</h3>
+  <p>Home is where the heart is..</p>
+</div>
+
+<div id="News" class="tabcontent">
+  <h1>View 1</h1>
+  <div class="row chart">
+
+    <div class="chart" id="barplot1">
+      <h2>Chart 1</h2>
+      <p>this is copy-pasted from the body section of barplot1 with id added to chart div</p>
+      <svg width="800" height="500"></svg>
+      <div class="tooltip"></div>
+      <br>
+  
+      <label for="toggle">Average Cost per</label>
+      <select name="toggle" id="toggleDropdown1">
+          <option value="true">Prescription</option>
+          <option value="false">Days Supply</option>
+      </select>
+  
+      <label for="drugClasses">Choose a drug class:</label>
+      <select name="drugClasses" id="drugClassesDropdown1">
+          <option value="ALL">Show All</option>
+          <option value="Immunosuppressants">Immunosuppressants</option>
+          <option value="Hormones & Synthetic Subst">Hormones & Synthetic Subst</option>
+          <option value="Central Nervous System">Central Nervous System</option>
+          <option value="Antineoplastic Agents">Antineoplastic Agents</option>
+          <option value="Anti-Infective Agents">Anti-Infective Agents</option>
+          <option value="Misc Therapeutic Agents">Misc Therapeutic Agents</option>
+          <option value="Serums, Toxoids, Vaccines">Serums, Toxoids, Vaccines</option>
+          <option value="Cardiovascular Agents">Cardiovascular Agents</option>
+          <option value="Blood Form/Coagul Agents">Blood Form/Coagul Agents</option>
+          <option value="Respiratory Tract Agents">Respiratory Tract Agents</option>
+      </select>
+  
+      <label for="quantity">Number to display:</label>
+      <input type="number" id="quantity1" name="quantity" min="2" max="10" value="5">
+    </div>
+
+    <div class="chart" id="barplot2">
+      <h2>Chart 2</h2>
+      <p>this is copy-pasted from the body section of barplot2 with id added to chart div</p>
+      <svg width="800" height="500"></svg>
+      <div class="tooltip"></div>
+      <br>
+  
+      <label for="toggle">Average Cost per</label>
+      <select name="toggle" id="toggleDropdown2">
+          <option value="true">Prescription</option>
+          <option value="false">Days Supply</option>
+      </select>
+  
+      <label for="drugGvB">Generic or Brand:</label>
+      <select name="drugGvB" id="drugGvBDropdown2">
+          <option value="Generic">Generic</option>
+          <option value="Brand">Brand</option>
+      </select>
+  
+      <label for="quantity">Number to display:</label>
+      <input type="number" id="quantity2" name="quantity" min="2" max="10" value="5">
+    </div>
+  </div>
+</div>
+
+<div id="View2" class="tabcontent">
+  <h1>View 2</h1>
+  <div id="visualization"></div>
+</div>
+
+<div id="View3" class="tabcontent">
+  <h1>View 3</h1>
+  <div class="row chart">
+    <!-- Content for View 3 will go here -->
+  </div>
+</div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="website-scripts/tab-scripts.js"></script>
+<script src="website-scripts/barplot1-script.js"></script>
+<script src="website-scripts/barplot2-script.js"></script>
+<script src="visualization.js"></script>
+</body>
+</html> 
