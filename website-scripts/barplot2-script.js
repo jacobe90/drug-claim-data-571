@@ -32,7 +32,13 @@ function barplot2() {
         svg.append("g").attr("class", "y-axis");
 
         //select tooltip
-        const tooltip = d3.select(".tooltip");
+        const tooltip = chart.select(".tooltip")
+            .style("position", "absolute")
+            .style("background-color", "lightgray")
+            .style("padding", "5px")
+            .style("border", "1px solid #ddd")
+            .style("border-radius", "5px")
+            .style("pointer-events", "none"); 
 
         //update chart to show bars in filteredData
         function updateChart(filteredData) {
