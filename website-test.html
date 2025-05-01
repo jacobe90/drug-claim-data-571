@@ -69,6 +69,33 @@ body, html {
 
 <div id="News" class="tabcontent">
   <h1>View 1</h1>
+
+  <div id="barplot-options">
+
+    <label for="toggle">Average Cost per</label>
+    <select name="toggle" id="toggleDropdown">
+          <option value="true">Prescription</option>
+          <option value="false">Days Supply</option>
+    </select>
+
+    <label for="drugGvB">Generic or Brand:</label>
+    <select name="drugGvB" id="drugGvBDropdown">
+        <option value="Both">Both</option>
+        <option value="Generic">Generic</option>
+        <option value="Brand">Brand</option>
+    </select>
+
+    <label for="yearSelector">Year:</label>
+    <select name="yearSelector" id="yearSelectorDropdown">
+        <option value="2022">2022</option>
+        <option value="2021">2021</option>
+        <option value="2020">2020</option>
+        <option value="2019">2019</option>
+        <option value="2018">2018</option>
+    </select>
+
+  </div>
+
   <div class="row chart">
 
     <div class="chart" id="barplot1">
@@ -77,29 +104,13 @@ body, html {
       <div class="tooltip"></div>
       <br>
   
-      <label for="toggle">Average Cost per</label>
-      <select name="toggle" id="toggleDropdown1">
-          <option value="true">Prescription</option>
-          <option value="false">Days Supply</option>
-      </select>
-  
       <label for="drugClasses">Choose a drug class:</label>
       <select name="drugClasses" id="drugClassesDropdown1">
           <option value="ALL">Show All</option>
-          <option value="Immunosuppressants">Immunosuppressants</option>
-          <option value="Hormones & Synthetic Subst">Hormones & Synthetic Subst</option>
-          <option value="Central Nervous System">Central Nervous System</option>
-          <option value="Antineoplastic Agents">Antineoplastic Agents</option>
-          <option value="Anti-Infective Agents">Anti-Infective Agents</option>
-          <option value="Misc Therapeutic Agents">Misc Therapeutic Agents</option>
-          <option value="Serums, Toxoids, Vaccines">Serums, Toxoids, Vaccines</option>
-          <option value="Cardiovascular Agents">Cardiovascular Agents</option>
-          <option value="Blood Form/Coagul Agents">Blood Form/Coagul Agents</option>
-          <option value="Respiratory Tract Agents">Respiratory Tract Agents</option>
       </select>
   
       <label for="quantity">Number to display:</label>
-      <input type="number" id="quantity1" name="quantity" min="2" max="10" value="5">
+      <input type="number" id="quantity1" name="quantity" min="2" max="20" value="5">
     </div>
 
     <div class="chart" id="barplot2">
@@ -108,20 +119,8 @@ body, html {
       <div class="tooltip"></div>
       <br>
   
-      <label for="toggle">Average Cost per</label>
-      <select name="toggle" id="toggleDropdown2">
-          <option value="true">Prescription</option>
-          <option value="false">Days Supply</option>
-      </select>
-  
-      <label for="drugGvB">Generic or Brand:</label>
-      <select name="drugGvB" id="drugGvBDropdown2">
-          <option value="Generic">Generic</option>
-          <option value="Brand">Brand</option>
-      </select>
-  
       <label for="quantity">Number to display:</label>
-      <input type="number" id="quantity2" name="quantity" min="2" max="10" value="5">
+      <input type="number" id="quantity2" name="quantity" min="2" value="5">
     </div>
   </div>
 </div>
@@ -157,8 +156,7 @@ body, html {
 
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="website-scripts/tab-scripts.js"></script>
-<script src="website-scripts/barplot1-script.js"></script>
-<script src="website-scripts/barplot2-script.js"></script>
+<script src="website-scripts/barplot-scripts.js"></script>
 <script src="visualization.js"></script>
 <script src="website-scripts/time-series.js"></script>
 </body>

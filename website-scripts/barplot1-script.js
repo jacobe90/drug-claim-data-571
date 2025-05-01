@@ -38,7 +38,8 @@ function barplot1() {
             .style("padding", "5px")
             .style("border", "1px solid #ddd")
             .style("border-radius", "5px")
-            .style("pointer-events", "none"); 
+            .style("pointer-events", "none")
+            .style("display", "none");
 
         //update chart to show bars in filteredData
         function updateChart(filteredData) {
@@ -150,13 +151,7 @@ function barplot1() {
             updateChart(filterData());
         });
 
-        /* d3.select("#toggleButton").on("click", () => {
-            isPrescriptionMode = !isPrescriptionMode;
-
-            updateChart(filterData());
-        }); */
-
-        d3.select("#toggleDropdown1").on("change", function() {
+        d3.select("#toggleDropdown").on("change", function() {
             const selectedVal = d3.select(this).property("value");
 
             isPrescriptionMode = selectedVal === 'true' ? true : false;
