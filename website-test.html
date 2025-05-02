@@ -94,12 +94,19 @@ body, html {
         <option value="2018">2018</option>
     </select>
 
+    <label for="patientOrPayer">Patient Out of Pocket or Payer Paid:</label>
+    <select name="patientOrPayer" id="patientOrPayerDropdown">
+        <option value="Both">Both</option>
+        <option value="Patient">Patient Out of Pocket</option>
+        <option value="Payer">Payer Paid</option>
+    </select>
+
   </div>
 
   <div class="row chart">
 
     <div class="chart" id="barplot1">
-      <h2>Chart 1</h2>
+      <h2>Average Costs of Drugs</h2>
       <svg width="800" height="500"></svg>
       <div class="tooltip"></div>
       <br>
@@ -114,7 +121,7 @@ body, html {
     </div>
 
     <div class="chart" id="barplot2">
-      <h2>Chart 2</h2>
+      <h2>Average Costs of Drug Classes</h2>
       <svg width="800" height="500"></svg>
       <div class="tooltip"></div>
       <br>

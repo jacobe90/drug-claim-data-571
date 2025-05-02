@@ -38,6 +38,13 @@ function barplots() {
         svg.append("g").attr("class", "x-axis").attr("transform", `translate(0,${height})`);
         svg.append("g").attr("class", "y-axis");
 
+        //add x-axis label
+        svg.select(".x-axis")
+            .append("text")
+            .attr("fill", "black")
+            .attr("x", width / 2)
+            .attr("y", 40)
+
         //select tooltip
         const tooltip = chart.select(".tooltip")
             .style("position", "absolute")
@@ -46,7 +53,8 @@ function barplots() {
             .style("border", "1px solid #ddd")
             .style("border-radius", "5px")
             .style("pointer-events", "none")
-            .style("display", "none");
+            .style("display", "none")
+            .style("text-align", "left");
 
         //update chart to show bars in filteredData
         function updateChart(filteredData) {
@@ -70,7 +78,13 @@ function barplots() {
             //x.domain(filteredData.map(d => d["Drug Name"])); 
             //y.domain([0, d3.max(stackedData[stackedData.length - 1], d => d[1])]);
             y.domain(filteredData.map(d => d["Drug Name"])); 
-            x.domain([0, d3.max(stackedData[stackedData.length - 1], d => d[1])]);
+            if (patientPayer == "Both") {
+                x.domain([0, d3.max(stackedData[1], d => d[1])]);
+            } else if (patientPayer == "Patient") {
+                x.domain([0, d3.max(stackedData[0], d => d[1])]);
+            } else { //patientPayer == "Payer"
+                x.domain([0, d3.max(stackedData[1], d => d[1]-d[0])]);
+            }
 
             //handles the axes
             svg.select(".x-axis")
@@ -82,6 +96,11 @@ function barplots() {
                 .transition()
                 .duration(800)
                 .call(d3.axisLeft(y));
+
+            //updates axis label
+            svg.select(".x-axis")
+                .select("text")
+                .text((isPrescriptionMode) ? "Average Cost per Prescription" : "Average Cost per Days Supply")
 
             //selects and updates/creates the bars
             const groups = svg.selectAll(".bar-group")
@@ -97,14 +116,36 @@ function barplots() {
                     const bars = group.selectAll("rect")
                         .data(d);
 
-                    bars.enter()
-                        .append("rect")
-                        .merge(bars)
-                        .transition().duration(800)
-                        .attr("y", d => y(d.data["Drug Name"]))
-                        .attr("height", y.bandwidth())
-                        .attr("x", d => x(d[0]))
-                        .attr("width", d => x(d[1]) - x(d[0]));
+                    //update bars based on patient/payer selection
+                    //if bar is not needed, it has width 0
+                    if (patientPayer == 'Both') {
+                        bars.enter()
+                            .append("rect")
+                            .merge(bars)
+                            .transition().duration(800)
+                            .attr("y", d => y(d.data["Drug Name"]))
+                            .attr("height", y.bandwidth())
+                            .attr("x", d => x(d[0]))
+                            .attr("width", d => x(d[1]) - x(d[0]));
+                    } else if (patientPayer == "Patient") {
+                        bars.enter()
+                            .append("rect")
+                            .merge(bars)
+                            .transition().duration(800)
+                            .attr("y", d => y(d.data["Drug Name"]))
+                            .attr("height", y.bandwidth())
+                            .attr("x", d => x(d[0]))
+                            .attr("width", d => (i == 0) ? x(d[1]) - x(d[0]) : 0);
+                    } else { //patientPayer == "Payer"
+                        bars.enter()
+                            .append("rect")
+                            .merge(bars)
+                            .transition().duration(800)
+                            .attr("y", d => y(d.data["Drug Name"]))
+                            .attr("height", y.bandwidth())
+                            .attr("x", d => x(0))
+                            .attr("width", d => (i == 1) ? x(d[1]) - x(d[0]) : 0);
+                    }
 
                     bars.exit().remove();
                 });
@@ -114,21 +155,29 @@ function barplots() {
             //tooltip functionality
             svg.selectAll("rect")
                 .on("mouseover", function(event, d) {
+                    //pick which line to bold
                     const category = isPrescriptionMode 
-                        ? (d3.select(this.parentNode).datum().key === "pocketPresc" ? "Patient Out of Pocket per Prescription" : "Payer Paid per Prescription")
-                        : (d3.select(this.parentNode).datum().key === "pocketDays" ? "Patient Out of Pocket per Days Supply" : "Payer Paid per Days Supply");
-
-                    const tot = isPrescriptionMode ? "Total Paid per Prescription" : "Total Paid per Days Supply";
-                    const avg = isPrescriptionMode ? "Average Cost per Prescription" : "Average Cost per Days Supply";
-
+                        ? (d3.select(this.parentNode).datum().key === "pocketPresc" ? "Out of Pocket Cost per Prescription" : "Insurance Cost per Prescription")
+                        : (d3.select(this.parentNode).datum().key === "pocketDays" ? "Out of Pocket Cost per Day" : "Insurance Cost per Day");
+            
                     //what the tooltip says
+                    let tooltipText = `<b><u>${d.data["Drug Name"]}</u></b> <br> 
+                            Class: ${d.data["Therapeutic Class"]} <br>
+                            <hr>
+                            Total Cost per Prescription: $${(+d.data["Average Cost per Prescription"]).toFixed(2)} <br>
+                            Insurance Cost per Prescription: $${(+d.data["Payer Paid per Prescription"]).toFixed(2)} (${(100 * +d.data["Payer Paid per Prescription"] / +d.data["Average Cost per Prescription"]).toFixed(1)}%) <br>
+                            Out of Pocket Cost per Prescription: $${(+d.data["Patient Out of Pocket per Prescription"]).toFixed(2)} (${(100 * +d.data["Patient Out of Pocket per Prescription"] / +d.data["Average Cost per Prescription"]).toFixed(1)}%) <br>
+                            <hr>
+                            Total Cost per Day: $${(+d.data["Average Cost per Days Supply"]).toFixed(2)} <br>
+                            Insurance Cost per Day: $${(+d.data["Payer Paid per Days Supply"]).toFixed(2)} (${(100 * +d.data["Payer Paid per Days Supply"] / +d.data["Average Cost per Days Supply"]).toFixed(1)}%)<br>
+                            Out of Pocket Cost per Day: $${(+d.data["Patient Out of Pocket per Days Supply"]).toFixed(2)} (${(100 * +d.data["Patient Out of Pocket per Days Supply"] / +d.data["Average Cost per Days Supply"]).toFixed(1)}%) <br>`
+
+                    //bold the line
+                    let regex = new RegExp(category)
+                    tooltipText = tooltipText.replace(regex, (s) => "<b>" + s + "</b>")
+
                     tooltip.style("display", "block")
-                        .html(
-                            `<b><u>${d.data["Drug Name"]}</u></b> <br> 
-                            <strong>Class:</strong> ${d.data["Therapeutic Class"]} <br>
-                            <strong>${category}:</strong> $${(d[1] - d[0]).toFixed(2)} <br>
-                            <strong>${tot}:</strong> $${(+d.data[avg]).toFixed(2)}`
-                        )
+                        .html(tooltipText)
                         .style("left", (event.pageX + 10) + "px")
                         .style("top", (event.pageY - 20) + "px");
                 })
@@ -168,7 +217,7 @@ function barplots() {
         d3.select("#drugClassesDropdown1").on("change", function() {
             const selectedVal = d3.select(this).property("value");
             //debug
-            console.log("Selected value:", selectedVal);
+            //console.log("Selected value:", selectedVal);
 
             drugClass = selectedVal;
 
@@ -240,6 +289,13 @@ function barplots() {
         svg.append("g").attr("class", "x-axis").attr("transform", `translate(0,${height})`);
         svg.append("g").attr("class", "y-axis");
 
+        //add x-axis label
+        svg.select(".x-axis")
+            .append("text")
+            .attr("fill", "black")
+            .attr("x", width / 2)
+            .attr("y", 40)
+
         //select tooltip
         const tooltip = chart.select(".tooltip")
             .style("position", "absolute")
@@ -248,7 +304,8 @@ function barplots() {
             .style("border", "1px solid #ddd")
             .style("border-radius", "5px")
             .style("pointer-events", "none")
-            .style("display", "none");
+            .style("display", "none")
+            .style("text-align", "left");
 
         //update chart to show bars in filteredData
         function updateChart(filteredData) {
@@ -270,7 +327,13 @@ function barplots() {
 
             //set the axis scales
             y.domain(filteredData.map(d => d["Therapeutic Class"])); 
-            x.domain([0, d3.max(stackedData[stackedData.length - 1], d => d[1])]);
+            if (patientPayer == "Both") {
+                x.domain([0, d3.max(stackedData[1], d => d[1])]);
+            } else if (patientPayer == "Patient") {
+                x.domain([0, d3.max(stackedData[0], d => d[1])]);
+            } else { //patientPayer == "Payer"
+                x.domain([0, d3.max(stackedData[1], d => d[1]-d[0])]);
+            }
 
             //handles the axes
             svg.select(".x-axis")
@@ -282,6 +345,11 @@ function barplots() {
                 .transition()
                 .duration(800)
                 .call(d3.axisLeft(y));
+
+            //updates axis label
+            svg.select(".x-axis")
+                .select("text")
+                .text((isPrescriptionMode) ? "Average Cost per Prescription" : "Average Cost per Days Supply")
 
             //selects and updates/creates the bars
             const groups = svg.selectAll(".bar-group")
@@ -297,14 +365,36 @@ function barplots() {
                     const bars = group.selectAll("rect")
                         .data(d);
 
-                    bars.enter()
-                        .append("rect")
-                        .merge(bars)
-                        .transition().duration(800)
-                        .attr("y", d => y(d.data["Therapeutic Class"]))
-                        .attr("height", y.bandwidth())
-                        .attr("x", d => x(d[0]))
-                        .attr("width", d => x(d[1]) - x(d[0]));
+                    //update bars based on patient/payer selection
+                    //if bar is not needed, it has width 0
+                    if (patientPayer == 'Both') {
+                        bars.enter()
+                            .append("rect")
+                            .merge(bars)
+                            .transition().duration(800)
+                            .attr("y", d => y(d.data["Therapeutic Class"]))
+                            .attr("height", y.bandwidth())
+                            .attr("x", d => x(d[0]))
+                            .attr("width", d => x(d[1]) - x(d[0]));
+                    } else if (patientPayer == "Patient") {
+                        bars.enter()
+                            .append("rect")
+                            .merge(bars)
+                            .transition().duration(800)
+                            .attr("y", d => y(d.data["Therapeutic Class"]))
+                            .attr("height", y.bandwidth())
+                            .attr("x", d => x(d[0]))
+                            .attr("width", d => (i == 0) ? x(d[1]) - x(d[0]) : 0);
+                    } else { //patientPayer == "Payer"
+                        bars.enter()
+                            .append("rect")
+                            .merge(bars)
+                            .transition().duration(800)
+                            .attr("y", d => y(d.data["Therapeutic Class"]))
+                            .attr("height", y.bandwidth())
+                            .attr("x", d => x(0))
+                            .attr("width", d => (i == 1) ? x(d[1]) - x(d[0]) : 0);
+                    }
 
                     bars.exit().remove();
                 });
@@ -315,19 +405,26 @@ function barplots() {
             svg.selectAll("rect")
                 .on("mouseover", function(event, d) {
                     const category = isPrescriptionMode 
-                        ? (d3.select(this.parentNode).datum().key === "pocketPresc" ? "Patient Out of Pocket per Prescription" : "Payer Paid per Prescription")
-                        : (d3.select(this.parentNode).datum().key === "pocketDays" ? "Patient Out of Pocket per Days Supply" : "Payer Paid per Days Supply");
-
-                    const tot = isPrescriptionMode ? "Total Paid per Prescription" : "Total Paid per Days Supply";
-                    const avg = isPrescriptionMode ? "Average Cost per Prescription" : "Average Cost per Days Supply";
-
+                        ? (d3.select(this.parentNode).datum().key === "pocketPresc" ? "Out of Pocket Cost per Prescription" : "Insurance Cost per Prescription")
+                        : (d3.select(this.parentNode).datum().key === "pocketDays" ? "Out of Pocket Cost per Day" : "Insurance Cost per Day");
+            
                     //what the tooltip says
+                    let tooltipText = `<b>${d.data["Therapeutic Class"]}</b> <br> 
+                            <hr>
+                            Total Cost per Prescription: $${(+d.data["Average Cost per Prescription"]).toFixed(2)} <br>
+                            Insurance Cost per Prescription: $${(+d.data["Payer Paid per Prescription"]).toFixed(2)} (${(100 * +d.data["Payer Paid per Prescription"] / +d.data["Average Cost per Prescription"]).toFixed(1)}%) <br>
+                            Out of Pocket Cost per Prescription: $${(+d.data["Patient Out of Pocket per Prescription"]).toFixed(2)} (${(100 * +d.data["Patient Out of Pocket per Prescription"] / +d.data["Average Cost per Prescription"]).toFixed(1)}%) <br>
+                            <hr>
+                            Total Cost per Day: $${(+d.data["Average Cost per Days Supply"]).toFixed(2)} <br>
+                            Insurance Cost per Day: $${(+d.data["Payer Paid per Days Supply"]).toFixed(2)} (${(100 * +d.data["Payer Paid per Days Supply"] / +d.data["Average Cost per Days Supply"]).toFixed(1)}%)<br>
+                            Out of Pocket Cost per Day: $${(+d.data["Patient Out of Pocket per Days Supply"]).toFixed(2)} (${(100 * +d.data["Patient Out of Pocket per Days Supply"] / +d.data["Average Cost per Days Supply"]).toFixed(1)}%) <br>`
+
+                    //bold the line
+                    let regex = new RegExp(category)
+                    tooltipText = tooltipText.replace(regex, (s) => "<b>" + s + "</b>")
+
                     tooltip.style("display", "block")
-                        .html(
-                            `<b><u>${d.data["Therapeutic Class"]}</u></b> <br> 
-                            <strong>${category}:</strong> $${(d[1] - d[0]).toFixed(2)} <br>
-                            <strong>${tot}:</strong> $${(+d.data[avg]).toFixed(2)}`
-                        )
+                        .html(tooltipText)
                         .style("left", (event.pageX + 10) + "px")
                         .style("top", (event.pageY - 20) + "px");
                 })
@@ -411,10 +508,20 @@ function barplots() {
 
     d3.select("#drugGvBDropdown").on("change", function() {
         const selectedVal = d3.select(this).property("value");
+
+        GvB = selectedVal;
+
+        barplot1.update(barplot1.filter());
+        barplot2.update(barplot2.filter());
+
+    });
+
+    d3.select("#patientOrPayerDropdown").on("change", function() {
+        const selectedVal = d3.select(this).property("value");
         //debug
         //console.log("Selected value:", selectedVal);
 
-        GvB = selectedVal;
+        patientPayer = selectedVal;
 
         barplot1.update(barplot1.filter());
         barplot2.update(barplot2.filter());
