@@ -10,13 +10,35 @@ d3.csv("Claims-time-series-test.csv").then(data => {
 
     // create colors for plot
     let ncolors = drugClasses.length;
+    console.log("ncolors: ", ncolors);
     let colorScale = d3.scaleSequential()
                        .domain([0, ncolors])
                        .interpolator(d3.interpolateRainbow);
 
+    function generateDistinctColors(numColors = 30) {
+        const colors = [];
+        for (let i = 0; i < numColors; i++) {
+            const hue = Math.floor((i * 360) / numColors);
+            const saturation = 90;
+            const lightness = 50;
+            colors.push(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
+        }
+        return colors;
+    }
+
+    const colorSet = [
+        ...d3.schemeTableau10,    // 10
+        ...d3.schemeSet3,         // 12
+        ...d3.schemePaired,       // 12
+        ...d3.schemeDark2         // 8
+      ].slice(0, 35); // total > 42, so slice to 35
+    
+    const colorPalette = generateDistinctColors(ncolors);
+    console.log(colorPalette);
+
     let legendColors = {}; // obj mapping name -> color
     drugClasses.forEach((d, i) => {
-        legendColors[d] = colorScale(i);
+        legendColors[d] = colorSet[i];
     });
     
     // initialize dropdown
@@ -160,23 +182,30 @@ d3.csv("Claims-time-series-test.csv").then(data => {
 
     const pricePerPerscriptionSvg = svgDiv.append('svg')
         .attr('id', 'timeSeriesPricePerPerscription')
-        .attr('width', 600)
-        .attr('height', 400);
+        .attr('width', 800)
+        .attr('height', 600);
     
     const percentGenericSvg = svgDiv.append('svg')
       .attr('id', 'timeSeriesPercentGeneric')
-      .attr('width', 600)
-      .attr('height', 400);
+      .attr('width', 800)
+      .attr('height', 600);
 
     const legendSvg = svgDiv.append('svg')
       .attr('id', 'legend')
       .attr('width', 200)
-      .attr('height', 1000);
+      .attr('height', 800);
     
-    // add inline block style for svgs
-    d3.select('#timeSeriesView')
-      .selectAll('svg')
-      .style("display", "inline-block");
+    // Add tooltip div
+    const tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .attr("id", "tooltip-timeseries")
+        .style("opacity", 0)
+        .style("position", "absolute")
+        .style("background-color", "white")
+        .style("padding", "5px")
+        .style("border", "1px solid #ddd")
+        .style("border-radius", "5px")
+        .style("pointer-events", "none");
 
     // update legend for plots
     function updateLegend() {
@@ -243,7 +272,7 @@ d3.csv("Claims-time-series-test.csv").then(data => {
         
         
         // Set dimensions
-        const width = 600, height = 400, margin = { top: 20, right: 30, bottom: 50, left: 50 };
+        const width = svg.attr("width"), height = svg.attr("height"), margin = { top: 20, right: 30, bottom: 50, left: 50 };
         
         // Create scales
         const x = d3.scalePoint()
@@ -274,17 +303,78 @@ d3.csv("Claims-time-series-test.csv").then(data => {
             .x(d => x(d.Year))
             .y(d => y(d["Average Out Of Pocket Per Prescription"]));
         
+        const plotLines = svg.append("g")
+                             .attr("class", "plotLines")
+                             .style("stroke-opacity", 1)
+        
         // make line plot for each class
         selectedClasses.forEach((therapeuticClass, idx) => {
+            // create g element to contain line and invisible selector line
+            let lineGroup = plotLines.append("g")
+                               .attr("class", "lineGroup");
+
             // get current class data
             let therapeuticClassData = currentClassData.filter(d => d['Therapeutic Class'] == therapeuticClass)
             // Append the line path
-            svg.append("path")
+            let linePath = lineGroup.append("path")
                 .datum(therapeuticClassData)
                 .attr("fill", "none")
                 .attr("stroke", legendColors[therapeuticClass])
                 .attr("stroke-width", 2)
-                .attr("d", line);
+                .attr("d", line)
+                
+            
+            // append invisible line to make selecting easier
+            lineGroup.append("path")
+                    .datum(therapeuticClassData)
+                    .attr("fill", "none")
+                    .attr("stroke", "transparent")
+                    .attr("stroke-width", 10)
+                    .attr("d", line)
+                    .on("mouseover", function(event, d) {
+                        
+                        // set all lines except selected to low opacity
+                        plotLines.transition()
+                                .duration(50)
+                                .style("stroke-opacity", 0.2);
+                        
+                        linePath.transition()
+                                .duration(50)
+                                .attr("stroke-width", 4)
+                                .transition()
+                                .duration(1)
+                                .style("stroke-opacity", 1)
+                        
+                        // Show tooltip
+                        tooltip.transition()
+                            .duration(200)
+                            .style("opacity", .9);
+                        
+                        // Create tooltip content based on available data
+                        let tooltipContent = `Therapeutic Class: ${therapeuticClass}<br/>`;
+                        
+                        tooltip.html(tooltipContent)
+                            .style("left", (event.pageX + 10) + "px")
+                            .style("top", (event.pageY - 28) + "px");
+                    })
+                    .on("mouseout", function() {
+                        plotLines.transition()
+                                .duration(50)
+                                .style("stroke-opacity", 1);
+
+                        // d3.select(this)
+                        //     .transition()
+                        //     .duration(200)
+                        //     .attr("r", 5)
+                        //     .style("opacity", 0.7);
+                        linePath.transition()
+                                .duration(50)
+                                .style('stroke-opacity', null)
+                                .attr("stroke-width", 2);
+                        tooltip.transition()
+                            .duration(200)
+                            .style("opacity", 0);
+                    });
         });
         
         // X-axis label
@@ -328,7 +418,7 @@ d3.csv("Claims-time-series-test.csv").then(data => {
         console.log(currentClassData);
         
         // Set dimensions
-        const width = 600, height = 400, margin = { top: 20, right: 30, bottom: 50, left: 50 };
+        const width = svg.attr("width"), height = svg.attr("height"), margin = { top: 20, right: 30, bottom: 50, left: 50 };
         
         // Create scales
         const x = d3.scalePoint()
@@ -358,17 +448,73 @@ d3.csv("Claims-time-series-test.csv").then(data => {
             .x(d => x(d.Year))
             .y(d => y(d["Percent Generic"]));
         
+        const plotLines = svg.append("g")
+            .attr("class", "plotLines")
+            .style("stroke-opacity", 1)
         // make line plot for each class
         selectedClasses.forEach((therapeuticClass, idx) => {
+            // create g element to contain line and invisible selector line
+            let lineGroup = plotLines.append("g")
+                               .attr("class", "lineGroup");
+            
             // get current class data
             let therapeuticClassData = currentClassData.filter(d => d['Therapeutic Class'] == therapeuticClass)
+            
             // Append the line path
-            svg.append("path")
+            let linePath = lineGroup.append("path")
                 .datum(therapeuticClassData)
                 .attr("fill", "none")
                 .attr("stroke", legendColors[therapeuticClass])
                 .attr("stroke-width", 2)
-                .attr("d", line);
+                .attr("d", line)
+                
+            
+            // append invisible line to make selecting easier
+            lineGroup.append("path")
+                    .datum(therapeuticClassData)
+                    .attr("fill", "none")
+                    .attr("stroke", "transparent")
+                    .attr("stroke-width", 10)
+                    .attr("d", line)
+                    .on("mouseover", function(event, d) {
+                        
+                        // set all lines except selected to low opacity
+                        plotLines.transition()
+                                .duration(50)
+                                .style("stroke-opacity", 0.2);
+                        
+                        linePath.transition()
+                                .duration(50)
+                                .attr("stroke-width", 4)
+                                .transition()
+                                .duration(1)
+                                .style("stroke-opacity", 1)
+                        
+                        // Show tooltip
+                        tooltip.transition()
+                            .duration(200)
+                            .style("opacity", .9);
+                        
+                        // Create tooltip content based on available data
+                        let tooltipContent = `Therapeutic Class: ${therapeuticClass}<br/>`;
+                        
+                        tooltip.html(tooltipContent)
+                            .style("left", (event.pageX + 10) + "px")
+                            .style("top", (event.pageY - 28) + "px");
+                    })
+                    .on("mouseout", function() {
+                        plotLines.transition()
+                                .duration(50)
+                                .style("stroke-opacity", 1);
+
+                        linePath.transition()
+                                .duration(50)
+                                .style('stroke-opacity', null)
+                                .attr("stroke-width", 2);
+                        tooltip.transition()
+                            .duration(200)
+                            .style("opacity", 0);
+                    });
         });
         
         // X-axis label
@@ -385,7 +531,7 @@ d3.csv("Claims-time-series-test.csv").then(data => {
             .attr("x", -height / 2)
             .attr("y", 15)
             .text("Percent of Prescriptions which are generic");
-        
+
         // add line plot to svg
     }
 
