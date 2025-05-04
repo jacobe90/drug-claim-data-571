@@ -312,9 +312,11 @@ d3.csv("Claims-time-series-test.csv").then(data => {
             // create g element to contain line and invisible selector line
             let lineGroup = plotLines.append("g")
                                .attr("class", "lineGroup");
-
+            
             // get current class data
             let therapeuticClassData = currentClassData.filter(d => d['Therapeutic Class'] == therapeuticClass)
+            console.log(therapeuticClassData);
+            console.log(`therapeutic class data ${therapeuticClassData}`)
             // Append the line path
             let linePath = lineGroup.append("path")
                 .datum(therapeuticClassData)
@@ -323,28 +325,43 @@ d3.csv("Claims-time-series-test.csv").then(data => {
                 .attr("stroke-width", 2)
                 .attr("d", line)
                 
-            
+            // add invisible dots, made visible upon mouseover of invisible line
+            let lineDots = lineGroup.selectAll("circle")
+                     .data(therapeuticClassData)
+                     .enter()
+                     .append("circle")
+                     .attr('cx', d => x(d.Year))
+                     .attr('cy', d => y(d["Average Out Of Pocket Per Prescription"]))
+                     .attr('r', 8)
+                     .attr("fill", "none")
+
             // append invisible line to make selecting easier
             lineGroup.append("path")
                     .datum(therapeuticClassData)
                     .attr("fill", "none")
                     .attr("stroke", "transparent")
-                    .attr("stroke-width", 10)
+                    .attr("stroke-width", 15)
                     .attr("d", line)
                     .on("mouseover", function(event, d) {
                         
-                        // set all lines except selected to low opacity
+                        // set all lines other than selected to low opacity
                         plotLines.transition()
                                 .duration(50)
                                 .style("stroke-opacity", 0.2);
                         
+                        // set moused over line to high opacity, high stroke width
                         linePath.transition()
                                 .duration(50)
                                 .attr("stroke-width", 4)
                                 .transition()
-                                .duration(1)
+                                .duration(0)
                                 .style("stroke-opacity", 1)
-                        
+
+                        // set dots to be visible on selected line
+                        lineDots.transition()
+                                .duration(50)
+                                .attr("fill", legendColors[therapeuticClass])
+
                         // Show tooltip
                         tooltip.transition()
                             .duration(200)
@@ -353,24 +370,34 @@ d3.csv("Claims-time-series-test.csv").then(data => {
                         // Create tooltip content based on available data
                         let tooltipContent = `Therapeutic Class: ${therapeuticClass}<br/>`;
                         
+                        // create callback to make tooltip track mouse position
+                        tooltip.on("mousemove")
                         tooltip.html(tooltipContent)
                             .style("left", (event.pageX + 10) + "px")
                             .style("top", (event.pageY - 28) + "px");
                     })
+                    .on("mousemove", (event) => {
+                        tooltip.style("left", (event.pageX + 10) + "px")
+                               .style("top", (event.pageY - 28) + "px");
+                    }) 
                     .on("mouseout", function() {
+                        // change all lines to full opacity
                         plotLines.transition()
                                 .duration(50)
                                 .style("stroke-opacity", 1);
 
-                        // d3.select(this)
-                        //     .transition()
-                        //     .duration(200)
-                        //     .attr("r", 5)
-                        //     .style("opacity", 0.7);
+                        // remove stroke opacity style from the previously moused line 
                         linePath.transition()
                                 .duration(50)
                                 .style('stroke-opacity', null)
                                 .attr("stroke-width", 2);
+
+                        // make dots of previously moused line invisible
+                        lineDots.transition()
+                                .duration(50)
+                                .attr("fill", "none")
+
+                        // make tooltip invisible
                         tooltip.transition()
                             .duration(200)
                             .style("opacity", 0);
