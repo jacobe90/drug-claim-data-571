@@ -317,12 +317,21 @@ d3.csv("Claims-time-series-test.csv").then(data => {
             let therapeuticClassData = currentClassData.filter(d => d['Therapeutic Class'] == therapeuticClass)
             console.log(therapeuticClassData);
             console.log(`therapeutic class data ${therapeuticClassData}`)
+            
             // Append the line path
             let linePath = lineGroup.append("path")
                 .datum(therapeuticClassData)
                 .attr("fill", "none")
                 .attr("stroke", legendColors[therapeuticClass])
                 .attr("stroke-width", 2)
+                .attr("d", line)
+            
+            // append invisible line to make selecting easier
+            let invisibleLine = lineGroup.append("path")
+                .datum(therapeuticClassData)
+                .attr("fill", "none")
+                .attr("stroke", "transparent")
+                .attr("stroke-width", 15)
                 .attr("d", line)
                 
             // add invisible dots, made visible upon mouseover of invisible line
@@ -334,14 +343,24 @@ d3.csv("Claims-time-series-test.csv").then(data => {
                      .attr('cy', d => y(d["Average Out Of Pocket Per Prescription"]))
                      .attr('r', 8)
                      .attr("fill", "none")
-
-            // append invisible line to make selecting easier
-            lineGroup.append("path")
-                    .datum(therapeuticClassData)
-                    .attr("fill", "none")
-                    .attr("stroke", "transparent")
-                    .attr("stroke-width", 15)
-                    .attr("d", line)
+                     .on("mousemove", (event, d) => {
+                        let tooltipContent = `<strong> Class: </strong> ${therapeuticClass} <br> <strong> Year: </strong> ${d.Year} <br> <strong> Average out of Pocket: </strong> $${d["Average Out Of Pocket Per Prescription"].toFixed(2)}<br/>`;
+                        
+                        // create callback to make tooltip track mouse position
+                        tooltip.html(tooltipContent)
+                            .style("left", (event.pageX + 10) + "px")
+                            .style("top", (event.pageY - 28) + "px");
+                     })
+                     .on("mouseout", (event, d) => {
+                        let tooltipContent = `<strong>Class: </strong> ${therapeuticClass}<br/>`;
+                        
+                        // create callback to make tooltip track mouse position
+                        tooltip.html(tooltipContent)
+                            .style("left", (event.pageX + 10) + "px")
+                            .style("top", (event.pageY - 28) + "px");
+                     })
+            
+            lineGroup
                     .on("mouseover", function(event, d) {
                         
                         // set all lines other than selected to low opacity
@@ -368,15 +387,17 @@ d3.csv("Claims-time-series-test.csv").then(data => {
                             .style("opacity", .9);
                         
                         // Create tooltip content based on available data
-                        let tooltipContent = `Therapeutic Class: ${therapeuticClass}<br/>`;
+                        let tooltipContent = `<strong>Class: </strong> ${therapeuticClass}<br/>`;
                         
                         // create callback to make tooltip track mouse position
-                        tooltip.on("mousemove")
+                        
                         tooltip.html(tooltipContent)
                             .style("left", (event.pageX + 10) + "px")
                             .style("top", (event.pageY - 28) + "px");
                     })
-                    .on("mousemove", (event) => {
+                    .on("mousemove", (event, d) => {
+                        // console.log(event.target, d);
+                        // let tooltipContent = `Therapeutic Class: ${therapeuticClass}<br/>`;
                         tooltip.style("left", (event.pageX + 10) + "px")
                                .style("top", (event.pageY - 28) + "px");
                     }) 
@@ -418,9 +439,6 @@ d3.csv("Claims-time-series-test.csv").then(data => {
             .attr("x", -height / 2)
             .attr("y", 15)
             .text("Average Out-of-Pocket per Prescription");
-        
-        console.log(data);
-        // add line plot to svg
     }
     
     function updatePlotPercentGeneric() {
@@ -503,41 +521,85 @@ d3.csv("Claims-time-series-test.csv").then(data => {
                     .attr("stroke", "transparent")
                     .attr("stroke-width", 10)
                     .attr("d", line)
-                    .on("mouseover", function(event, d) {
+            
+            // add invisible dots, made visible upon mouseover of invisible line
+            let lineDots = lineGroup.selectAll("circle")
+                     .data(therapeuticClassData)
+                     .enter()
+                     .append("circle")
+                     .attr('cx', d => x(d.Year))
+                     .attr('cy', d => y(d["Percent Generic"]))
+                     .attr('r', 8)
+                     .attr("fill", "none")
+                     .on("mousemove", (event, d) => {
+                        let tooltipContent = `<strong> Class: </strong> ${therapeuticClass} <br> <strong> Year: </strong> ${d.Year} <br> <strong> Percent Generic: </strong> ${(d["Percent Generic"] * 100).toFixed(2)}% <br/>`;
                         
-                        // set all lines except selected to low opacity
+                        // create callback to make tooltip track mouse position
+                        tooltip.html(tooltipContent)
+                            .style("left", (event.pageX + 10) + "px")
+                            .style("top", (event.pageY - 28) + "px");
+                     })
+                     .on("mouseout", (event, d) => {
+                        let tooltipContent = `<strong>Class: </strong> ${therapeuticClass}<br/>`;
+                        
+                        // create callback to make tooltip track mouse position
+                        tooltip.html(tooltipContent)
+                            .style("left", (event.pageX + 10) + "px")
+                            .style("top", (event.pageY - 28) + "px");
+                     })
+            
+            lineGroup
+                    .on("mouseover", function(event, d) {
+                        // set all lines other than selected to low opacity
                         plotLines.transition()
                                 .duration(50)
                                 .style("stroke-opacity", 0.2);
                         
+                        // set moused over line to high opacity, high stroke width
                         linePath.transition()
                                 .duration(50)
                                 .attr("stroke-width", 4)
                                 .transition()
-                                .duration(1)
+                                .duration(0)
                                 .style("stroke-opacity", 1)
-                        
+
+                        // set dots to be visible on selected line
+                        lineDots.transition()
+                                .duration(50)
+                                .attr("fill", legendColors[therapeuticClass])
+
                         // Show tooltip
                         tooltip.transition()
                             .duration(200)
                             .style("opacity", .9);
                         
                         // Create tooltip content based on available data
-                        let tooltipContent = `Therapeutic Class: ${therapeuticClass}<br/>`;
+                        let tooltipContent = `<strong>Class: </strong> ${therapeuticClass}<br/>`;
+                        
+                        // create callback to make tooltip track mouse position
                         
                         tooltip.html(tooltipContent)
                             .style("left", (event.pageX + 10) + "px")
                             .style("top", (event.pageY - 28) + "px");
                     })
                     .on("mouseout", function() {
+                        // change all lines to full opacity
                         plotLines.transition()
                                 .duration(50)
                                 .style("stroke-opacity", 1);
 
+                        // remove stroke opacity style from the previously moused line 
                         linePath.transition()
                                 .duration(50)
                                 .style('stroke-opacity', null)
                                 .attr("stroke-width", 2);
+
+                        // make dots of previously moused line invisible
+                        lineDots.transition()
+                                .duration(50)
+                                .attr("fill", "none")
+
+                        // make tooltip invisible
                         tooltip.transition()
                             .duration(200)
                             .style("opacity", 0);
