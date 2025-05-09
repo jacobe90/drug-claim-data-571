@@ -1,5 +1,10 @@
 d3.csv("Claims-time-series-test.csv").then(data => {
-    // preprocess data
+    // remove unknown / missing classes
+    data = data.filter(e => {
+        let bannedClasses = ["Unknown", "Missing", "~Missing", "UNKNOWN"];
+        return !bannedClasses.includes(e['Therapeutic Class'])
+    })
+    // convert average out of pocket to float
     data.forEach(e => {
         e["Average Out Of Pocket Per Prescription"] = parseFloat(e["Average Out Of Pocket Per Prescription"]);
     });
@@ -193,7 +198,7 @@ d3.csv("Claims-time-series-test.csv").then(data => {
     const legendSvg = svgDiv.append('svg')
       .attr('id', 'legend')
       .attr('width', 200)
-      .attr('height', 800);
+      .attr('height', 600);
     
     // Add tooltip div
     const tooltip = d3.select("body").append("div")
