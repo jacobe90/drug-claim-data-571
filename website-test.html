@@ -71,9 +71,9 @@ body, html {
 <body>
 
 <button class="tablink" onclick="openPage('Home', this, 'red')" id="defaultOpen">Home</button>
-<button class="tablink" onclick="openPage('News', this, 'green')">View 1</button>
-<button class="tablink" onclick="openPage('View2', this, 'purple')">View 2</button>
-<button class="tablink" onclick="openPage('View3', this, 'teal')">View 3</button>
+<button class="tablink" onclick="openPage('News', this, 'red')">View 1</button>
+<button class="tablink" onclick="openPage('View2', this, 'red')">View 2</button>
+<button class="tablink" onclick="openPage('View3', this, 'red')">View 3</button>
 
 <div id="Home" class="tabcontent">
   <h2>About this Visualization</h2>
@@ -171,7 +171,6 @@ body, html {
 
   <div class="about-section" style="margin-top: 30px;">
     <h3>About View 1</h3>
-    <!-- TODO: Review this text and make sure it's correct-->
     <p>This view shows two bar charts comparing drug costs in Massachusetts. The left chart displays costs for individual drugs, while the right chart shows aggregated costs by drug class. Use the filters above to explore:</p>
     <ul>
       <li>Costs per prescription or days supply</li>
@@ -180,6 +179,17 @@ body, html {
       <li>Patient out-of-pocket costs vs. insurance payments</li>
       <li>Adjust the number of drugs displayed using the quantity input. We recommend starting with 10-20</li>
     </ul>
+  </div>
+
+  <div style="max-width: 1200px; margin: 0 auto; background-color: #f8f9fa;
+  padding: 10px;
+  text-align: center;
+  width: 100%;
+  border-top: 1px solid #dee2e6;
+  font-size: 12px;
+  color: #6c757d;
+  margin-top: 20px;">
+    <p style="margin: 0;">Acknowledgements: D3.js | Claude AI | Cursor AI | Stack Overflow | W3Schools </p> <!-- TODO: Add whatever other resources you used -->
   </div>
 </div>
 
@@ -199,6 +209,17 @@ body, html {
     </ul>
     <p>Use the interactive controls to customize your view and gain deeper insights into drug cost distributions. This is intended to allow you to explore the data in more detail.</p>
   </div>
+
+  <div style="max-width: 1200px; margin: 0 auto; background-color: #f8f9fa;
+  padding: 10px;
+  text-align: center;
+  width: 100%;
+  border-top: 1px solid #dee2e6;
+  font-size: 12px;
+  color: #6c757d;
+  margin-top: 20px;">
+    <p style="margin: 0;">Acknowledgements: D3.js | Claude AI | Cursor AI | Stack Overflow | W3Schools </p> <!-- TODO: Add whatever other resources you used -->
+  </div>
 </div>
 
 <div id="View3" class="tabcontent">
@@ -207,7 +228,6 @@ body, html {
   </div>
 
   <div class="about-section" style="margin-top: 30px;">
-    <!-- TODO: Review this text and make sure it's correct-->
     <h3>About View 3</h3>
     <p>This view presents a time series visualization that shows how drug costs have changed over the years from 2018 to 2022. The visualization enables you to:</p>
     <ul>
@@ -215,6 +235,17 @@ body, html {
       <li>Track trends in generic versus brand-name drug prescriptions</li>
     </ul>
     <p>Use the interactive controls to select different drugs or drug classes and observe how their costs have evolved over the five-year period.</p>
+  </div>
+
+  <div style="max-width: 1200px; margin: 0 auto; background-color: #f8f9fa;
+  padding: 10px;
+  text-align: center;
+  width: 100%;
+  border-top: 1px solid #dee2e6;
+  font-size: 12px;
+  color: #6c757d;
+  margin-top: 20px;">
+    <p style="margin: 0;">Acknowledgements: D3.js | Claude AI | Cursor AI | Stack Overflow | W3Schools </p> <!-- TODO: Add whatever other resources you used -->
   </div>
 </div>
 
@@ -224,21 +255,7 @@ body, html {
 <script src="visualization.js"></script>
 <script src="website-scripts/time-series.js"></script>
 
-<footer style="
-  background-color: #f8f9fa;
-  padding: 10px;
-  text-align: center;
-  width: 100%;
-  border-top: 1px solid #dee2e6;
-  font-size: 12px;
-  color: #6c757d;
-  margin-top: 20px;
-">
-  <!-- TODO: THIS doesn't work well on view 2 and 3, it messes with the layout of the descriptive text, please fix-->
-  <div style="max-width: 1200px; margin: 0 auto;">
-    <p style="margin: 0;">Acknowledgements: D3.js | Claude AI | Cursor AI | Stack Overflow | W3Schools </p> <!-- TODO: Add whatever other resources you used -->
-  </div>
-</footer>
+
 
 </body>
 </html> 
