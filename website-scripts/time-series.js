@@ -187,13 +187,13 @@ d3.csv("Claims-time-series-test.csv").then(data => {
 
     const pricePerPerscriptionSvg = svgDiv.append('svg')
         .attr('id', 'timeSeriesPricePerPerscription')
-        .attr('width', 800)
-        .attr('height', 600);
+        .attr('width', 600)
+        .attr('height', 450);
     
     const percentGenericSvg = svgDiv.append('svg')
       .attr('id', 'timeSeriesPercentGeneric')
-      .attr('width', 800)
-      .attr('height', 600);
+      .attr('width', 600)
+      .attr('height', 450);
 
     const legendSvg = svgDiv.append('svg')
       .attr('id', 'legend')
