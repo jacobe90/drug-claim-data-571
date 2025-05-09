@@ -53,18 +53,56 @@ body, html {
       flex-wrap: wrap;
     }
 
+    /* About section styling */
+    .about-section {
+      text-align: left;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .about-section h2,
+    .about-section h3 {
+      text-align: left;
+    }
+
 </style>
 </head>
 <body>
 
-<button class="tablink" onclick="openPage('Home', this, 'red')">Home</button>
-<button class="tablink" onclick="openPage('News', this, 'green')" id="defaultOpen">View 1</button>
+<button class="tablink" onclick="openPage('Home', this, 'red')" id="defaultOpen">Home</button>
+<button class="tablink" onclick="openPage('News', this, 'green')">View 1</button>
 <button class="tablink" onclick="openPage('View2', this, 'purple')">View 2</button>
 <button class="tablink" onclick="openPage('View3', this, 'teal')">View 3</button>
 
 <div id="Home" class="tabcontent">
-  <h3>Home</h3>
-  <p>Home is where the heart is..</p>
+  <h2>About this Visualization</h2>
+  <div class="about-section">
+    <!-- TODO: Review this text and make sure it's correct-->
+    <p>This interactive visualization tool allows users to explore and analyze prescription drug costs in Massachusetts, focusing on the relationship between patient out-of-pocket expenses and payer payments. Through various views and interactive features, users can gain insights into drug pricing patterns, cost distributions, and temporal trends.</p>
+
+    <h3>About the Data</h3>
+    <p>Our dataset contains comprehensive information about drug costs and patient payments for individuals covered under fully-insured private health insurance plans. The data is sourced from the Center for Health and Information Analysis (CHIA), a Massachusetts state government agency dedicated to collecting and analyzing healthcare data.</p>
+
+    <p>CHIA maintains a robust collection of health-related data at the patient level, including:</p>
+    <ul>
+      <li>Patient payments for drugs and health claims</li>
+      <li>Inpatient discharge records</li>
+      <li>Emergency care data</li>
+      <li>Observational stay records in hospitals</li>
+    </ul>
+
+    <p>This data is made available to state agencies, healthcare providers, and researchers working in the public interest. The prescription drug dataset used in this visualization is publicly available for download from the <a href="https://www.chiamass.gov/prescription-drugs" target="_blank">CHIA website</a>. We specifically focus on the prescription drug dataset, which contains information on the cost of drugs and the amount paid by patients and insurance companies.</p>
+
+    <h3>How to Use This Visualization</h3>
+    <p>Navigate through the different views using the tabs at the top of the page:</p>
+    <ul>
+      <li><strong>View 1:</strong> Explore average drug costs with interactive bar charts. Use the dropdown menus to filter by year, drug type (Generic/Brand), and payment type (Patient/Payer).</li>
+      <li><strong>View 2:</strong> View a scatter plot of all drugs and their costs to patients and insurance, allowing you to explore the dataset in more detail.</li>
+      <li><strong>View 3:</strong> Examine temporal trends in drug costs over time.</li>
+    </ul>
+    <p>Each view offers interactive features - hover over data points for detailed information and use the provided controls to customize your analysis.</p>
+  </div>
 </div>
 
 <div id="News" class="tabcontent">
@@ -130,16 +168,53 @@ body, html {
       <input type="number" id="quantity2" name="quantity" min="2" value="5">
     </div>
   </div>
+
+  <div class="about-section" style="margin-top: 30px;">
+    <h3>About View 1</h3>
+    <!-- TODO: Review this text and make sure it's correct-->
+    <p>This view shows two bar charts comparing drug costs in Massachusetts. The left chart displays costs for individual drugs, while the right chart shows aggregated costs by drug class. Use the filters above to explore:</p>
+    <ul>
+      <li>Costs per prescription or days supply</li>
+      <li>Generic vs. brand-name drugs</li>
+      <li>Data from 2018-2022</li>
+      <li>Patient out-of-pocket costs vs. insurance payments</li>
+      <li>Adjust the number of drugs displayed using the quantity input. We recommend starting with 10-20</li>
+    </ul>
+  </div>
 </div>
 
 <div id="View2" class="tabcontent">
   <h1>View 2</h1>
   <div id="visualization"></div>
+  
+  <div class="about-section" style="margin-top: 30px;">
+    <!-- TODO: Review this text and make sure it's correct-->
+    <h3>About View 2</h3>
+    <p>This view presents a scatter plot visualization that allows you to explore the relationship between patient out-of-pocket costs and insurance payments for prescription drugs. The visualization enables you to:</p>
+    <ul>
+      <li>Compare patient demand / usage against costs</li>
+      <li>Identify patterns and outliers in drug pricing by various factors including drug class, year, generic/brand, and patient/payer cost</li>
+      <li>Filter and analyze data by drug class, year, and other relevant factors</li>
+      <li>Hover over data points to view detailed information about specific drugs</li>
+    </ul>
+    <p>Use the interactive controls to customize your view and gain deeper insights into drug cost distributions. This is intended to allow you to explore the data in more detail.</p>
+  </div>
 </div>
 
 <div id="View3" class="tabcontent">
   <h1>View 3</h1>
   <div id="timeSeriesView">
+  </div>
+
+  <div class="about-section" style="margin-top: 30px;">
+    <!-- TODO: Review this text and make sure it's correct-->
+    <h3>About View 3</h3>
+    <p>This view presents a time series visualization that shows how drug costs have changed over the years from 2018 to 2022. The visualization enables you to:</p>
+    <ul>
+      <li>Track cost trends for specific drugs or drug classes over time</li>
+      <li>Track trends in generic versus brand-name drug prescriptions</li>
+    </ul>
+    <p>Use the interactive controls to select different drugs or drug classes and observe how their costs have evolved over the five-year period.</p>
   </div>
 </div>
 
@@ -148,5 +223,22 @@ body, html {
 <script src="website-scripts/barplot-scripts.js"></script>
 <script src="visualization.js"></script>
 <script src="website-scripts/time-series.js"></script>
+
+<footer style="
+  background-color: #f8f9fa;
+  padding: 10px;
+  text-align: center;
+  width: 100%;
+  border-top: 1px solid #dee2e6;
+  font-size: 12px;
+  color: #6c757d;
+  margin-top: 20px;
+">
+  <!-- TODO: THIS doesn't work well on view 2 and 3, it messes with the layout of the descriptive text, please fix-->
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <p style="margin: 0;">Acknowledgements: D3.js | Claude AI | Cursor AI | Stack Overflow | W3Schools </p> <!-- TODO: Add whatever other resources you used -->
+  </div>
+</footer>
+
 </body>
 </html> 

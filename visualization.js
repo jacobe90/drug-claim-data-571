@@ -832,3 +832,12 @@ d3.csv("edited_df.csv").then(function(data) {
         updateVisualization();
     });
 });
+
+/*
+Acknowledgements:
+- D3.js documentation
+- Claude AI
+- Cursor AI
+- Stack Overflow
+- W3Schools
+*/ //TODO: Add whatever other resources you used
