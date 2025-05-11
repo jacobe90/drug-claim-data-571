@@ -50,7 +50,8 @@ body, html {
 
     .row {
       display: flex;
-      flex-wrap: wrap;
+      width: 100%;
+      justify-content: center;
     }
 
     /* About section styling */
@@ -71,7 +72,7 @@ body, html {
 <body>
 
 <button class="tablink" onclick="openPage('Home', this, 'red')" id="defaultOpen">Home</button>
-<button class="tablink" onclick="openPage('News', this, 'red')">View 1</button>
+<button class="tablink" onclick="openPage('View1', this, 'red')">View 1</button>
 <button class="tablink" onclick="openPage('View2', this, 'red')">View 2</button>
 <button class="tablink" onclick="openPage('View3', this, 'red')">View 3</button>
 
@@ -105,7 +106,7 @@ body, html {
   </div>
 </div>
 
-<div id="News" class="tabcontent">
+<div id="View1" class="tabcontent">
   <h1>View 1</h1>
 
   <div id="barplot-options">
@@ -132,11 +133,11 @@ body, html {
         <option value="2018">2018</option>
     </select>
 
-    <label for="patientOrPayer">Patient Out of Pocket or Payer Paid:</label>
+    <label for="patientOrPayer">Patient Out of Pocket or Insurance Paid:</label>
     <select name="patientOrPayer" id="patientOrPayerDropdown">
         <option value="Both">Both</option>
         <option value="Patient">Patient Out of Pocket</option>
-        <option value="Payer">Payer Paid</option>
+        <option value="Payer">Insurance Paid</option>
     </select>
 
   </div>
@@ -145,7 +146,7 @@ body, html {
 
     <div class="chart" id="barplot1">
       <h2>Average Costs of Drugs</h2>
-      <svg width="800" height="500"></svg>
+      <svg width="700" height="500" style="width: 100%"></svg>
       <div class="tooltip"></div>
       <br>
   
@@ -160,7 +161,7 @@ body, html {
 
     <div class="chart" id="barplot2">
       <h2>Average Costs of Drug Classes</h2>
-      <svg width="800" height="500"></svg>
+      <svg width="700" height="500" style="width: 100%"></svg>
       <div class="tooltip"></div>
       <br>
   
@@ -189,7 +190,7 @@ body, html {
   font-size: 12px;
   color: #6c757d;
   margin-top: 20px;">
-    <p style="margin: 0;">Acknowledgements: D3.js | Claude AI | Cursor AI | Stack Overflow | W3Schools </p> <!-- TODO: Add whatever other resources you used -->
+    <p style="margin: 0;">Acknowledgements: D3.js | ChatGPT | Stack Overflow | W3Schools </p>
   </div>
 </div>
 

@@ -5,9 +5,28 @@ function barplots() {
     let GvB = "Both";
     let patientPayer = "Both";
 
-    //this is copy-pasted from barplot1, with d3.select(some things) => chart.select(same thing) and chart=barplot1
+    //styling for dropdowns
+    d3.selectAll("#toggleDropdown,#drugGvBDropdown,#yearSelectorDropdown,#patientOrPayerDropdown,#drugClassesDropdown1")
+        .style("padding", "4px 8px")
+        .style("background-color", "#f8f9fa")
+        .style("border", "1px solid #ddd")
+        .style("border-radius", "4px")
+        .style("cursor", "pointer")
+        .style("font-size", "12px");
+    
+    d3.select("#View1").selectAll("label")
+        .style("margin-right", "5px")
+        .style("font-weight", "bold")
+        .style("font-size", "12px");
+
+    d3.selectAll("#quantity1,#quantity2")
+        .style("padding", "4px 8px")
+        .style("background-color", "#f8f9fa")
+        .style("border", "1px solid #ddd")
+        .style("border-radius", "4px")
+        .style("font-size", "12px");
+
     function barplot1() {
-        //let isPrescriptionMode = true; //true if per prescription, false if per days supply
         let data = [];
         let drugClass = "ALL";
         let numToDisplay = 5;
@@ -15,8 +34,8 @@ function barplots() {
         //initialize svg element
         const chart = d3.select("#barplot1")
         const margin = { top: 30, right: 30, bottom: 50, left: 150 };
-        const width = 800 - margin.left - margin.right;
-        const height = 500 - margin.top - margin.bottom;
+        const width = +chart.select("svg").attr("width") - margin.left - margin.right;
+        const height = +chart.select("svg").attr("height") - margin.top - margin.bottom;
         const svg = chart.select("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
@@ -24,8 +43,6 @@ function barplots() {
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
         //set x and y scales
-        //const x = d3.scaleBand().range([0, width]).padding(0.3);
-        //const y = d3.scaleLinear().range([height, 0]);
         const x = d3.scaleLinear().range([0, width]);
         const y = d3.scaleBand().range([height, 0]).padding(0.3);
 
@@ -48,18 +65,19 @@ function barplots() {
         //select tooltip
         const tooltip = chart.select(".tooltip")
             .style("position", "absolute")
-            .style("background-color", "lightgray")
+            .style("background-color", "white")
             .style("padding", "5px")
             .style("border", "1px solid #ddd")
             .style("border-radius", "5px")
             .style("pointer-events", "none")
+            .style("opacity", .9)
             .style("display", "none")
             .style("text-align", "left");
 
         //update chart to show bars in filteredData
         function updateChart(filteredData) {
             //debug code, helpful to see what data goes into the bar chart
-            console.log("Updating Chart with Data:", filteredData);
+            //console.log("Updating Chart with Data:", filteredData);
 
             if (filteredData.length === 0) {
                 console.error("No data available to display.");
@@ -75,8 +93,6 @@ function barplots() {
             const stackedData = stack(filteredData);
 
             //set the axis scales
-            //x.domain(filteredData.map(d => d["Drug Name"])); 
-            //y.domain([0, d3.max(stackedData[stackedData.length - 1], d => d[1])]);
             y.domain(filteredData.map(d => d["Drug Name"])); 
             if (patientPayer == "Both") {
                 x.domain([0, d3.max(stackedData[1], d => d[1])]);
@@ -192,7 +208,7 @@ function barplots() {
 
 
         //Load data from CSV and initialize chart and class dropdown
-        d3.csv("barplot1-temp-data.csv").then(csvData => {
+        d3.csv("barplot1-data.csv").then(csvData => {
             //Convert CSV strings to numbers
             csvData.forEach(d => {
                 d.pocketPresc = +d["Patient Out of Pocket per Prescription"];
@@ -256,18 +272,15 @@ function barplots() {
         barplot1.filter = filterData;
     }
 
-    //this is copy-pasted from barplot2, with d3.select(some things) => chart.select(same thing) and chart=barplot2
     function barplot2() {
-        //let isPrescriptionMode = true; //true if per prescription, false if per days supply
         let data = [];
-        //let GvB = "Generic";
         let numToDisplay = 5;
 
         //initialize svg element
         const chart = d3.select("#barplot2")
         const margin = { top: 30, right: 30, bottom: 50, left: 160 };
-        const width = 800 - margin.left - margin.right;
-        const height = 500 - margin.top - margin.bottom;
+        const width = +chart.select("svg").attr("width") - margin.left - margin.right;
+        const height = +chart.select("svg").attr("height") - margin.top - margin.bottom;
         const svg = chart.select("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
@@ -275,8 +288,6 @@ function barplots() {
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
         //set x and y scales
-        //const x = d3.scaleBand().range([0, width]).padding(0.3);
-        //const y = d3.scaleLinear().range([height, 0]);
         const x = d3.scaleLinear().range([0, width]);
         const y = d3.scaleBand().range([height, 0]).padding(0.3);
 
@@ -299,18 +310,19 @@ function barplots() {
         //select tooltip
         const tooltip = chart.select(".tooltip")
             .style("position", "absolute")
-            .style("background-color", "lightgray")
+            .style("background-color", "white")
             .style("padding", "5px")
             .style("border", "1px solid #ddd")
             .style("border-radius", "5px")
             .style("pointer-events", "none")
+            .style("opacity", .9)
             .style("display", "none")
             .style("text-align", "left");
 
         //update chart to show bars in filteredData
         function updateChart(filteredData) {
             //debug code, helpful to see what data goes into the bar chart
-            console.log("Updating Chart with Data:", filteredData);
+            //console.log("Updating Chart with Data:", filteredData);
 
             if (filteredData.length === 0) {
                 console.error("No data available to display.");
@@ -439,7 +451,7 @@ function barplots() {
 
 
         //Load data from CSV and initialize chart
-        d3.csv("barplot2-temp-data.csv").then(csvData => {
+        d3.csv("barplot2-data.csv").then(csvData => {
             //Convert CSV strings to numbers
             csvData.forEach(d => {
                 d.pocketPresc = +d["Patient Out of Pocket per Prescription"];
@@ -527,6 +539,7 @@ function barplots() {
         barplot2.update(barplot2.filter());
 
     });
+    
 
 }
 barplots()
