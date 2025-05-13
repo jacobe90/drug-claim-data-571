@@ -19,6 +19,15 @@ Cleaned data is stored in the following files
 ## Project Screencast
 https://youtu.be/QKDUrw4ueRk
 
+## How to use
+Navigate through the different views using the tabs at the top of the page:
+
+- View 1: Explore average drug costs with interactive bar charts. Use the dropdown menus to filter by year, drug type (Generic/Brand), and payment type (Patient/Payer).
+- View 2: View a scatter plot of all drugs and their costs to patients and insurance, allowing you to explore the dataset in more detail.
+- View 3: Examine temporal trends in drug costs over time.
+
+Each view offers interactive features - hover over data points for detailed information and use the provided controls to customize your analysis.
+
 ## Instructions for Building from Source
 - Download repository, open in vscode
 - Open `index.html` with vscode live server
